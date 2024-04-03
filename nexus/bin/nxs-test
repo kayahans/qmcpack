@@ -1447,6 +1447,13 @@ def pwscf_simulation():
 #end def pwscf_simulation
 
 
+def pwscf_error_handler():
+    nunit('import')
+
+    nunit('bands_unconverged')
+        
+    nunit_all()
+#end def pwscf_error_handler
 
 def gamess_simulation():
     nunit('import')
@@ -1959,6 +1966,7 @@ NexusTest( qmcpack_converter_analyzers     )
 NexusTest( qmcpack_analyzer                )
 NexusTest( vasp_simulation                 )
 NexusTest( pwscf_simulation                )
+NexusTest( pwscf_error_handler             )
 NexusTest( gamess_simulation               )
 NexusTest( pyscf_simulation                )
 NexusTest( quantum_package_simulation      )
@@ -2001,6 +2009,7 @@ NexusTest( qdens_radial                    )
 #NexusTest( project_manager                 )
 #NexusTest( pseudopotential                 )
 #NexusTest( pwscf_analyzer                  )
+#NexusTest( pwscf_error_handler             )
 #NexusTest( pwscf_input                     )
 #NexusTest( pwscf_postprocessor_analyzers   )
 #NexusTest( pwscf_postprocessor_input       )

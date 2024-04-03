@@ -300,26 +300,30 @@ class Pwscf(Simulation):
 
 
     def check_sim_status(self):
+        import pwscf_error_handler 
         outfile = os.path.join(self.locdir,self.outfile)
         fobj = open(outfile,'r')
         output = fobj.read()
         fobj.close()
-        not_converged = 'convergence NOT achieved'  in output
-        time_exceeded = 'Maximum CPU time exceeded' in output
-        user_stop     = 'Program stopped by user request' in output
+        restartable_errors = [error for error in pwscf_error_handler.pwscf_restartable_error_labels.keys() if error in output]
+        unrestartable_errors = [error for error in pwscf_error_handler.pwscf_unrestartable_error_labels.keys() if error in output]
+        has_restartable_errors = any(restartable_errors)
+        has_unrestartable_errors = any(unrestartable_errors)
+        has_errors = any([has_restartable_errors, has_unrestartable_errors])
         run_finished  = 'JOB DONE' in output
-        restartable = not_converged or time_exceeded or user_stop
-        restart = run_finished and self.restartable and restartable
+        restart = run_finished and self.restartable and has_restartable_errors
+        eh = pwscf_error_handler.PwscfErrorHandler(self)
+
         if restart:
-            self.save_attempt()
-            self.input.control.restart_mode = 'restart'
-            self.reset_indicators()
+            eh.process_restartable_error(error_text=restartable_errors)            
+        elif has_unrestartable_errors:
+            eh.process_unrestartable_error(error_text=unrestartable_errors)            
         else:
             error_in_routine = 'Error in routine' in output
-            failed = not_converged or time_exceeded or user_stop
+            failed = has_restartable_errors or has_unrestartable_errors
             failed |= error_in_routine
             self.finished = run_finished
-            self.failed   = failed
+            self.failed   = failed 
         #end if
     #end def check_sim_status
 
