@@ -937,7 +937,7 @@ class Simulation(NexusCore):
     #end def attempt_files
 
 
-    def save_attempt(self):
+    def save_attempt(self, idx : int=-1):
         local = self.attempt_files()
         filepaths = []
         for file in local:
@@ -947,7 +947,10 @@ class Simulation(NexusCore):
             #end if
         #end for
         if len(filepaths)>0:
-            prefix = self.identifier+'_attempt'
+            if idx > -1:
+                prefix = self.identifier+'_attempt_{}'.format(idx)    
+            else:
+                prefix = self.identifier+'_attempt'
             n=0
             for dir in os.listdir(self.locdir):
                 if dir.startswith(prefix):
