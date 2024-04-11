@@ -19,7 +19,7 @@ def fix_charge(pw_sim):
     pass
 
 def fix_bands(pw_sim):
-    pass
+    pw_sim.input.system.nbnd *= 2
 
 error_dispatch = {
     'walltime' : fix_walltime,

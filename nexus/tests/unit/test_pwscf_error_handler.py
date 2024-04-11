@@ -70,6 +70,7 @@ def test_import():
     
 def test_bands_unconverged():
     import os
+    import pwscf_error_handler
     tpath = testing.setup_unit_test_output_directory('pwscf_error_handler', 'test_bands_unconverged', **pseudo_inputs)
     sim = get_pwscf_sim('scf')
 
@@ -111,7 +112,7 @@ def test_bands_unconverged():
 
     sim.check_sim_status()
 
-    sim.input.system.nbnd *= 2
+    pwscf_error_handler.fix_bands(sim)
     sim.write_inputs(save_image=False)
 
     out_text = 'JOB DONE'
