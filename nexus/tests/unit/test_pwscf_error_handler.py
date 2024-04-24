@@ -28,6 +28,43 @@ def get_system():
 #end def get_system
 
 
+def get_pwscf_sim_force_restart(type='scf'):
+    from nexus_base import nexus_core
+    from machines import job
+    from pwscf import Pwscf,generate_pwscf
+
+    nexus_core.runs = ''
+
+    sim = None
+
+    if type=='scf':
+        sim = generate_pwscf(
+            identifier    = 'scf',
+            path          = 'scf',
+            job           = job(machine='ws1',cores=1),
+            input_type    = 'generic',
+            calculation   = 'scf',
+            input_dft     = 'lda', 
+            ecutwfc       = 200,   
+            nbnd          = 8,
+            conv_thr      = 1e-8, 
+            nosym         = True,
+            wf_collect    = True,
+            system        = get_system(),
+            pseudos       = ['C.BFD.upf'], 
+            nogamma       = True,
+            force_restart = True
+            )
+    else:
+        failed()
+    #end if
+
+    assert(sim is not None)
+    assert(isinstance(sim,Pwscf))
+
+    return sim
+#end def get_pwscf_sim_force_restart
+
 def get_pwscf_sim(type='scf'):
     from nexus_base import nexus_core
     from machines import job
@@ -68,10 +105,10 @@ def test_import():
     import pwscf_error_handler
 #end def test_import
     
-def test_bands_unconverged():
+def test_no_force_restart():
     import os
     import pwscf_error_handler
-    tpath = testing.setup_unit_test_output_directory('pwscf_error_handler', 'test_bands_unconverged', **pseudo_inputs)
+    tpath = testing.setup_unit_test_output_directory('pwscf_error_handler', 'test_no_force_restart', **pseudo_inputs)
     sim = get_pwscf_sim('scf')
 
     assert(sim.locdir.rstrip('/')==os.path.join(tpath,'scf').rstrip('/'))
@@ -104,7 +141,58 @@ def test_bands_unconverged():
 
     assert(not sim.finished)
 
-    out_text = 'too many bands are not converged'
+    out_text = 'Error in routine: too many bands are not converged'
+    outfile = open(out_path,'w')
+    outfile.write(out_text)
+    outfile.close()
+    assert(out_text in open(out_path,'r').read())
+
+    sim.check_sim_status()
+    # With no force restart, the job should fail
+    assert(sim.failed)
+
+    clear_all_sims()
+    restore_nexus()
+#end def test_no_force_restart
+
+def test_force_restart():
+    import os
+    import pwscf_error_handler
+    tpath = testing.setup_unit_test_output_directory('pwscf_error_handler', 'test_force_restart', **pseudo_inputs)
+    sim = get_pwscf_sim_force_restart('scf')
+
+    assert(sim.locdir.rstrip('/')==os.path.join(tpath,'scf').rstrip('/'))
+    if not os.path.exists(sim.locdir):
+        os.makedirs(sim.locdir)
+    #end if
+
+    assert(not sim.finished)
+
+    try:
+        sim.check_sim_status()
+    except IOError:
+        None
+    except Exception as e:
+        failed(str(e))
+    #end try
+
+    assert(not sim.finished)
+
+    out_path = os.path.join(tpath,'scf',sim.outfile)
+    sim.write_inputs(save_image=False)
+
+    out_text = ''
+    outfile = open(out_path,'w')
+    outfile.write(out_text)
+    outfile.close()
+    assert(os.path.exists(out_path))
+
+    sim.check_sim_status()
+
+    assert(not sim.finished)
+
+
+    out_text = 'Error in routine: too many bands are not converged'
     outfile = open(out_path,'w')
     outfile.write(out_text)
     outfile.close()
@@ -112,7 +200,7 @@ def test_bands_unconverged():
 
     sim.check_sim_status()
 
-    pwscf_error_handler.fix_bands(sim)
+    # pwscf_error_handler.fix_bands(sim)
     sim.write_inputs(save_image=False)
 
     out_text = 'JOB DONE'
@@ -122,9 +210,9 @@ def test_bands_unconverged():
     assert(out_text in open(out_path,'r').read())
 
     sim.check_sim_status()
+    # With force restart, the job should not fail
     assert(not sim.failed)
 
     clear_all_sims()
     restore_nexus()
-#end def test_bands_unconverged
-
+#end def test_force_restart

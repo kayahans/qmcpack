@@ -312,19 +312,24 @@ class Pwscf(Simulation):
         has_errors = any([has_restartable_errors, has_unrestartable_errors])
         run_finished  = 'JOB DONE' in output
         restart = run_finished and self.restartable and has_restartable_errors
-        eh = pwscf_error_handler.PwscfErrorHandler(self)
-
-        if restart:
-            eh.process_restartable_error(error_text=restartable_errors)            
-        elif has_unrestartable_errors:
-            eh.process_unrestartable_error(error_text=unrestartable_errors)            
+        if self.force_restart:
+            eh = pwscf_error_handler.PwscfErrorHandler(self)
+            if has_restartable_errors:
+                eh.process_restartable_error(error_text=restartable_errors)            
+            elif has_unrestartable_errors:
+                eh.process_unrestartable_error(error_text=unrestartable_errors)            
         else:
-            error_in_routine = 'Error in routine' in output
-            failed = has_restartable_errors or has_unrestartable_errors
-            failed |= error_in_routine
-            self.finished = run_finished
-            self.failed   = failed 
-        #end if
+            if restart:
+                self.save_attempt()
+                self.input.control.restart_mode = 'restart'
+                self.reset_indicators()
+            else:
+                error_in_routine = 'Error in routine' in output
+                failed = has_restartable_errors or has_unrestartable_errors
+                failed |= error_in_routine
+                self.finished = run_finished
+                self.failed   = failed 
+            #end if
     #end def check_sim_status
 
 

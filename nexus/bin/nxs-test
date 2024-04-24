@@ -1450,7 +1450,9 @@ def pwscf_simulation():
 def pwscf_error_handler():
     nunit('import')
 
-    nunit('bands_unconverged')
+    nunit('no_force_restart')
+
+    nunit('force_restart')
         
     nunit_all()
 #end def pwscf_error_handler
@@ -1966,7 +1968,6 @@ NexusTest( qmcpack_converter_analyzers     )
 NexusTest( qmcpack_analyzer                )
 NexusTest( vasp_simulation                 )
 NexusTest( pwscf_simulation                )
-NexusTest( pwscf_error_handler             )
 NexusTest( gamess_simulation               )
 NexusTest( pyscf_simulation                )
 NexusTest( quantum_package_simulation      )
@@ -1981,6 +1982,7 @@ NexusTest( qmca                            )
 NexusTest( qmc_fit                         )
 NexusTest( qdens                           )
 NexusTest( qdens_radial                    )
+NexusTest( pwscf_error_handler             )
 
 # ordered alphabetically (pytest order)
 #NexusTest( basisset                        )
