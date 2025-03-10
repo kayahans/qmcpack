@@ -12,7 +12,7 @@ def get_class_generators():
     from pwscf_postprocessors import Projwfc,generate_projwfc
     from pwscf_postprocessors import Cppp,generate_cppp
     from pwscf_postprocessors import Pwexport,generate_pwexport
-
+    from pwscf_postprocessors import Hp,generate_hp
     class_generators = [
         (PP,generate_pp),
         (Dos,generate_dos),
@@ -20,6 +20,7 @@ def get_class_generators():
         (Projwfc,generate_projwfc),
         (Cppp,generate_cppp),
         (Pwexport,generate_pwexport),
+        (Hp,generate_hp),
         ]
 
     return class_generators
@@ -34,6 +35,7 @@ def test_import():
     from pwscf_postprocessors import Projwfc,generate_projwfc
     from pwscf_postprocessors import Cppp,generate_cppp
     from pwscf_postprocessors import Pwexport,generate_pwexport
+    from pwscf_postprocessors import Hp,generate_hp
 #end def test_import
 
 

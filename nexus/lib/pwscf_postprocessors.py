@@ -110,7 +110,7 @@ from generic import obj
 from fileio import TextFile
 from simulation import Simulation,SimulationInput,SimulationAnalyzer,NullSimulationAnalyzer
 from developer import DevBase,ci
-
+from execute import execute
 
 booldict = {'.true.':True,'.false.':False}
 def readval(val):
@@ -226,7 +226,13 @@ class Namelist(DevBase):
                 value = value.strip()
                 v = readval(value)
                 if v!=None:
-                    vals[name] = v
+                    if "(" in name and ")" in name:
+                        name_temp = name.strip().split("(")
+                        name = name_temp[0]
+                        v_key=name_temp[1].split(")")[0]
+                        v = obj({v_key:v})
+                    else:
+                        vals[name] = v
                 else:
                     self.error('namelist read failed\nnamelist name: {0}\nvariable name: {1}\nvariable value: {2}'.format(self.namelist,name,value))
                 #end if
@@ -248,12 +254,20 @@ class Namelist(DevBase):
         self.check_names('write',self.keys())
         text = '&'+namelist+'\n'
         for name,value in self.items():
-            v = writeval(value)
-            if v!=None:
-                text += '  {0} = {1}\n'.format(name,v)
-            else:
-                self.error('namelist write failed\nnamelist name: {0}\nvariable name: {1}\nvariable value: {2}'.format(namelist,name,value))
-            #end if
+            if isinstance(value, obj):
+                value_keys = list(value.keys())
+                for key, val in value.items():
+                    name_obj = name + '({})'.format(key)
+                    v = writeval(val)
+                    text += '  {0} = {1}\n'.format(name_obj,v)
+            else:            
+                v = writeval(value)
+                if v!=None:
+                    text += '  {0} = {1}\n'.format(name,v)
+                else:
+                    self.error('namelist write failed\nnamelist name: {0}\nvariable name: {1}\nvariable value: {2}'.format(namelist,name,value))
+                #end if
+            #end if 
         #end for
         text += '/\n'
         if has_namelist:
@@ -372,7 +386,7 @@ class PostProcessSimulation(Simulation):
     #end def check_result    
 
     def app_command(self):
-        return self.app_name+'<'+self.infile
+        return self.app_name+' -input '+self.infile
     #end def app_command
 
     def check_sim_status(self):
@@ -888,7 +902,7 @@ class HpNamelist(Namelist):
     names = ['prefix', 'outdir', 'max_seconds', 'nq1', 'nq2', 'nq3', 'skip_equivalence_q', 
              'determine_num_pert_only', 'find_atpert', 'docc_thr', 'skip_type', 'equiv_type', 
              'perturb_only_atom', 'start_q', 'last_q', 'sum_pertq', 'compute_hp', 'conv_thr_chi', 
-             'thresh_init', 'ethr_nscf', 'niter_max', 'alpha_mix(i)', 'nmix', 'num_neigh', 'lmin', 
+             'thresh_init', 'ethr_nscf', 'niter_max', 'alpha_mix', 'nmix', 'num_neigh', 'lmin', 
              'rmax', 'dist_thr']
 #end class HpNamelist
 
@@ -969,21 +983,26 @@ class HpAnalyzer(SimulationAnalyzer):
 
     def open_hubbard_dat(self):
         logfile = os.path.join(self.info.path,"HUBBARD.dat")
-        self.hubbard_dat = TextFile(logfile)
+        if os.path.exists(logfile):
+            self.hubbard_dat = TextFile(logfile)
+        else:
+            self.hubbard_dat = None
     #end def open_hubbard_dat
 
     def read_hubbard_dat(self):
         log = self.hubbard_dat
-        log.seek('# Copy this data in the pw.x input file for DFT+Hubbard calculations')
-        result = ''
-        while True:
-            line = log.readline()
-            result += line
-            if not (len(line)>0):
-                break
-            #end if 
-        #end while
-        self.hubbard_parameters = result
+        result = None
+        if log is not None:
+            log.seek('# Copy this data in the pw.x input file for DFT+Hubbard calculations')
+            result = ''
+            while True:
+                line = log.readline()
+                result += line
+                if not (len(line)>0):
+                    break
+                #end if
+            #end while
+        self.hubbard_parameters = result        
     #end def read_hubbard_dat
 
     def close_hubbard_dat(self):
@@ -1000,11 +1019,11 @@ class Hp(PostProcessSimulation):
     analyzer_type      = HpAnalyzer
     generic_identifier = 'hp'
     application        = 'hp.x'
-    application_results = set(['hubbard_parameters'])
+    application_results = set(['hubbard_parameters', 'atom_chi'])
 
     def check_result(self,result_name,sim):
         calculating_result = False
-        if result_name=='hubbard_parameters':
+        if result_name=='hubbard_parameters' or result_name=='atom_chi':
             calculating_result = True
         #end if 
         return calculating_result
@@ -1012,17 +1031,56 @@ class Hp(PostProcessSimulation):
 
     def get_result(self,result_name,sim):
         result = obj()        
-        prefix = 'pwscf'
-        outdir = './'
         if result_name == 'hubbard_parameters':
             pa = self.load_analyzer_image()
             result = pa.hubbard_parameters
+        elif result_name == 'atom_chi':
+            result.locdir   = self.locdir
+            result.hpdir    = os.path.join(self.locdir,self.input.inputhp.outdir+'/HP')
         else:
             self.error('ability to get result '+result_name+' has not been implemented')
         #end if
         return result
     #end def get_result
-
+    
+    def incorporate_result(self,result_name,result,sim):
+        if result_name=='charge_density':
+            c = sim.input.control
+            res_path = os.path.abspath(result.locdir)
+            loc_path = os.path.abspath(self.locdir)
+            if res_path==loc_path:
+                None # don't need to do anything if in same directory
+            else: # rsync output into nscf dir
+                outdir = os.path.join(self.locdir,c.outdir)
+                command = 'rsync -av {0}/* {1}/'.format(result.outdir,outdir)
+                if not os.path.exists(outdir):
+                    os.makedirs(outdir)
+                #end if
+                sync_record = os.path.join(outdir,'nexus_sync_record')
+                if not os.path.exists(sync_record):
+                    print('    Running rsync for the {} directory. This might take a while.'.format(outdir))
+                    execute(command)
+                    print('    Completed rsync for the {} directory.'.format(outdir))
+                    f = open(sync_record,'w')
+                    f.write('\n')
+                    f.close()
+                #end if
+        elif result_name=='atom_chi':
+            res_path = os.path.abspath(result.locdir)
+            loc_path = os.path.abspath(self.locdir)
+            if res_path==loc_path:
+                None
+            else:
+                outdir = os.path.join(self.locdir,self.input.inputhp.outdir+'/HP')
+                command = 'rsync -av {0}/*chi*.dat {1}/'.format(result.hpdir,outdir)
+                if not os.path.exists(outdir):
+                    os.makedirs(outdir)
+                #end if
+                execute(command)
+        else:
+            self.error('ability to incorporate result '+result_name+' has not been implemented')
+        #end if
+    #end def incorporate_result
 
 
 #end class Projwfc

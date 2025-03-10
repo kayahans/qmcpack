@@ -1,0 +1,15 @@
+&inputhp
+  prefix = 'pwscf'
+  outdir = 'pwscf_output'
+  lmin = 1
+  nq2 = 1
+  find_atpert = 3
+  nq1 = 1
+  conv_thr_chi = 0.001
+  determine_num_pert_only = .true.
+  nq3 = 1
+  num_neigh = 6
+  niter_max = 500
+  docc_thr = 1d-05
+/
+

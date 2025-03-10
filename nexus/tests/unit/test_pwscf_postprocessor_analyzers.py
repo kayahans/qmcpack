@@ -11,6 +11,7 @@ def test_import():
     from pwscf_postprocessors import ProjwfcAnalyzer
     from pwscf_postprocessors import CpppAnalyzer
     from pwscf_postprocessors import PwexportAnalyzer
+    from pwscf_postprocessors import HpAnalyzer
 #end def test_import
 
 
@@ -22,6 +23,7 @@ def test_empty_init():
     from pwscf_postprocessors import ProjwfcAnalyzer
     from pwscf_postprocessors import CpppAnalyzer
     from pwscf_postprocessors import PwexportAnalyzer
+    from pwscf_postprocessors import HpAnalyzer
 
     pa = PPAnalyzer(None)
     pa = DosAnalyzer(None)
@@ -29,6 +31,7 @@ def test_empty_init():
     pa = ProjwfcAnalyzer(None)
     pa = CpppAnalyzer(None)
     pa = PwexportAnalyzer(None)
+    pa = HpAnalyzer(None)
 #end def test_empty_init
 
 
@@ -41,7 +44,7 @@ def test_projwfc_analyzer():
     tpath = testing.setup_unit_test_output_directory(
         test      = 'pwscf_postprocessor_analyzers',
         subtest   = 'test_projwfc_analyzer',
-        file_sets = ['pwf.in','pwf.out'],
+        file_sets = ['hp.in','hp.out', 'HUBBARD.dat', 'pwf.in','pwf.out'],
         )
 
     projwfc_in = os.path.join(tpath,'pwf.in')
@@ -219,3 +222,50 @@ def test_projwfc_analyzer():
 
     assert(text_eq(text,text_ref))
 #end def test_projwfc_analyzer
+
+def test_hp_analyzer():
+    import os
+    from generic import obj
+    from pwscf_postprocessors import HpAnalyzer
+    from pwscf_postprocessors import HpInput
+    tpath = testing.setup_unit_test_output_directory(
+        test      = 'pwscf_postprocessor_analyzers',
+        subtest   = 'test_hp_analyzer',
+        file_sets = ['hp.in','hp.out', 'HUBBARD.dat', 'pwf.in','pwf.out'],
+        )
+
+    hp_in = os.path.join(tpath,'hp.in')
+    hubbard_dat = os.path.join(tpath,'HUBBARD.dat')
+
+    
+    pa = HpAnalyzer(hp_in)
+
+    del pa.info.path
+    
+    pa_ref = obj(
+        info = obj(
+            infile      = 'hp.in',
+            initialized = True,
+            outfile     = 'hp.out',
+            strict      = False,
+            warn        = False,
+            ),
+        input = HpInput(
+            outdir = 'pwscf_output',
+            prefix = 'pwscf',
+            lmin = 1,
+            nq2 = 1,
+            find_atpert = 3,
+            nq1 = 1,
+            conv_thr_chi = 0.001,
+            determine_num_pert_only = True,
+            nq3 = 1,
+            num_neigh = 6,
+            niter_max = 500,
+            docc_thr = 1e-05,
+            ),
+        )
+    assert(object_eq(pa.to_obj(),pa_ref))
+
+    
+test_hp_analyzer()

@@ -1,0 +1,242 @@
+
+     Program HP v.7.4 starts on  4Dec2024 at 17:45:11 
+
+     This program is part of the open-source Quantum ESPRESSO suite
+     for quantum simulation of materials; please cite
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 21 395502 (2009);
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 29 465901 (2017);
+         "P. Giannozzi et al., J. Chem. Phys. 152 154105 (2020);
+          URL http://www.quantum-espresso.org", 
+     in publications or presentations arising from this work. More details at
+     http://www.quantum-espresso.org/quote
+
+     Parallel version (MPI), running on   128 processors
+
+     MPI processes distributed on     1 nodes
+     K-points division:     npool     =       8
+     R & G space division:  proc/nbgrp/npool/nimage =      16
+     478118 MiB available memory on the printing compute node when the environment starts
+ 
+
+     =---------------------------------------------------------------------------=
+
+           Calculation of Hubbard parameters using the HP code based on DFPT      
+
+               Please cite the following papers when using this program:          
+
+                 - HP code : Comput. Phys. Commun. 279, 108455 (2022).            
+
+                                                                                  
+
+           For a nonrelativistic, collinear calculation:                          
+
+                 - Theory  : I. Timrov et al, Phys. Rev. B 98,  085127 (2018) and 
+
+                             I. Timrov et al, Phys. Rev. B 103, 045141 (2021).    
+
+                                                                                  
+
+           For a fully-relativistic, and/or noncollinear calculation:             
+
+                 - Theory  : L. Binci et al., Phys. Rev. B 108, 115157 (2023) and 
+
+                             I. Timrov et al, Phys. Rev. B 98,  085127 (2018) 
+
+     =-----------------------------------------------------------------------------=
+
+     Reading xml data from directory:
+
+     pwscf_output/pwscf.save/
+     file Na.paw.z_9.ld1.psl.v1.0.0-low.upf: wavefunction(s)  2P renormalized
+     file O.pbe-n-kjpaw_psl.0.1.UPF: wavefunction(s)  2P renormalized
+
+     IMPORTANT: XC functional enforced from input :
+     Exchange-correlation= PBE
+                           (   1   4   3   4   0   0   0)
+     Any further DFT definition will be discarded
+     Please, verify this is what you really want
+
+ 
+     Parallelization info
+     --------------------
+     sticks:   dense  smooth     PW     G-vecs:    dense   smooth      PW
+     Min         532     354     99                36651    19951    2983
+     Max         533     355    100                36654    19954    2989
+     Sum        8519    5675   1591               586437   319233   47763
+ 
+     Using Slab Decomposition
+ 
+
+     Check: negative core charge=   -0.000023
+
+     negative rho (up, down):  0.000E+00 3.924E-04
+     Reading collected, re-writing distributed wavefunctions
+ 
+
+     bravais-lattice index     =             0
+     lattice parameter (alat)  =       12.3604 (a.u.)
+     unit-cell volume          =     1797.7601 (a.u.)^3
+     number of atoms/cell      =            22
+     number of atomic types    =             3
+     kinetic-energy cut-off    =        120.00 (Ry)
+     charge density cut-off    =        720.00 (Ry)
+     conv. thresh. for NSCF    =       1.0E-11
+     conv. thresh. for chi     =       1.0E-03
+     Input Hubbard parameters (in eV):
+       V (  1,   1)  =   8.0000
+       V (  1,   9)  =   2.0000
+       V (  1,  11)  =   2.0000
+       V (  1,  19)  =   2.0000
+       V (  1,  32)  =   2.0000
+       V (  1,  51)  =   2.0000
+       V (  1, 257)  =   2.0000
+       V (  2,   2)  =   8.0000
+       V (  2,  10)  =   2.0000
+       V (  2,  12)  =   2.0000
+       V (  2,  20)  =   2.0000
+       V (  2, 368)  =   2.0000
+       V (  2, 558)  =   2.0000
+       V (  2, 581)  =   2.0000
+       V (  3,   3)  =   8.0000
+       V (  3,   9)  =   2.0000
+       V (  3,  13)  =   2.0000
+       V (  3,  17)  =   2.0000
+       V (  3,  19)  =   2.0000
+       V (  3, 294)  =   2.0000
+       V (  3, 300)  =   2.0000
+       V (  4,   4)  =   8.0000
+       V (  4,  10)  =   2.0000
+       V (  4,  14)  =   2.0000
+       V (  4,  18)  =   2.0000
+       V (  4,  20)  =   2.0000
+       V (  4, 315)  =   2.0000
+       V (  4, 321)  =   2.0000
+       V (  5,   5)  =   8.0000
+       V (  5,   8)  =   2.0000
+       V (  5,  11)  =   2.0000
+       V (  5,  14)  =   2.0000
+       V (  5,  18)  =   2.0000
+       V (  5, 126)  =   2.0000
+       V (  5, 257)  =   2.0000
+       V (  6,   6)  =   8.0000
+       V (  6,   7)  =   2.0000
+       V (  6,  12)  =   2.0000
+       V (  6,  13)  =   2.0000
+       V (  6,  17)  =   2.0000
+       V (  6, 368)  =   2.0000
+       V (  6, 499)  =   2.0000
+       V (  7,   6)  =   2.0000
+       V (  7,   7)  =   7.0000
+       V (  7, 290)  =   2.0000
+       V (  7, 551)  =   2.0000
+       V (  8,   5)  =   2.0000
+       V (  8,   8)  =   7.0000
+       V (  8,  46)  =   2.0000
+       V (  8, 311)  =   2.0000
+       V (  9,   1)  =   2.0000
+       V (  9,   3)  =   2.0000
+       V (  9,   9)  =   7.0000
+       V (  9,  24)  =   2.0000
+       V ( 10,   2)  =   2.0000
+       V ( 10,   4)  =   2.0000
+       V ( 10,  10)  =   7.0000
+       V ( 10, 573)  =   2.0000
+       V ( 11,   1)  =   2.0000
+       V ( 11,   5)  =   2.0000
+       V ( 11,  11)  =   7.0000
+       V ( 12,   2)  =   2.0000
+       V ( 12,   6)  =   2.0000
+       V ( 12,  12)  =   7.0000
+       V ( 13,   3)  =   2.0000
+       V ( 13,   6)  =   2.0000
+       V ( 13,  13)  =   7.0000
+       V ( 13, 290)  =   2.0000
+       V ( 14,   4)  =   2.0000
+       V ( 14,   5)  =   2.0000
+       V ( 14,  14)  =   7.0000
+       V ( 14, 311)  =   2.0000
+       V ( 15,  15)  =   7.0000
+       V ( 15, 116)  =   2.0000
+       V ( 15, 353)  =   2.0000
+       V ( 15, 357)  =   2.0000
+       V ( 16,  16)  =   7.0000
+       V ( 16, 244)  =   2.0000
+       V ( 16, 248)  =   2.0000
+       V ( 16, 489)  =   2.0000
+       V ( 17,   3)  =   2.0000
+       V ( 17,   6)  =   2.0000
+       V ( 17,  17)  =   7.0000
+       V ( 18,   4)  =   2.0000
+       V ( 18,   5)  =   2.0000
+       V ( 18,  18)  =   7.0000
+       V ( 19,   1)  =   2.0000
+       V ( 19,   3)  =   2.0000
+       V ( 19,  19)  =   7.0000
+       V ( 20,   2)  =   2.0000
+       V ( 20,   4)  =   2.0000
+       V ( 20,  20)  =   7.0000
+       V ( 21,  21)  =   0.0000
+       V ( 22,  22)  =   0.0000
+
+     celldm(1) = 12.36042  celldm(2) =  0.00000  celldm(3) =  0.00000
+     celldm(4) =  0.00000  celldm(5) =  0.00000  celldm(6) =  0.00000
+
+     crystal axes: (cart. coord. in units of alat)
+               a(1) = (  0.9972 -0.0090  0.0743 )  
+               a(2) = ( -0.3624  0.9759 -0.0781 )  
+               a(3) = ( -0.2602 -0.5192  0.9896 )  
+
+     reciprocal axes: (cart. coord. in units 2 pi/alat)
+               b(1) = (  0.9718  0.3980  0.4644 )  
+               b(2) = ( -0.0312  1.0569  0.5463 )  
+               b(3) = ( -0.0754  0.0535  1.0188 )  
+
+     Atoms inside the unit cell (Cartesian axes):
+     site n.  atom      mass           positions (alat units)
+        1   Mn        54.9380   tau(  1) = ( -0.01327 -0.04278  0.21562  )
+        2   Mn        54.9380   tau(  2) = (  0.38788  0.49048  0.77016  )
+        3   Mn        54.9380   tau(  3) = (  0.20448  0.31433  0.07455  )
+        4   Mn        54.9380   tau(  4) = (  0.17013  0.13337  0.91122  )
+        5   Mn        54.9380   tau(  5) = ( -0.03109 -0.11704  0.63260  )
+        6   Mn        54.9380   tau(  6) = (  0.40570  0.56474  0.35318  )
+        7   O         15.9990   tau(  7) = (  0.36620  0.79943  0.17077  )
+        8   O         15.9990   tau(  8) = (  0.00840 -0.35173  0.81500  )
+        9   O         15.9990   tau(  9) = ( -0.05387  0.18310  0.03730  )
+       10   O         15.9990   tau( 10) = (  0.42847  0.26460  0.94847  )
+       11   O         15.9990   tau( 11) = ( -0.10469  0.08228  0.44963  )
+       12   O         15.9990   tau( 12) = (  0.47929  0.36542  0.53614  )
+       13   O         15.9990   tau( 13) = (  0.46931  0.42958  0.10416  )
+       14   O         15.9990   tau( 14) = ( -0.09471  0.01812  0.88161  )
+       15   O         15.9990   tau( 15) = ( -0.32416  0.71054  0.31468  )
+       16   O         15.9990   tau( 16) = (  0.69877 -0.26284  0.67109  )
+       17   O         15.9990   tau( 17) = (  0.15065  0.46317  0.30305  )
+       18   O         15.9990   tau( 18) = (  0.22395 -0.01546  0.68272  )
+       19   O         15.9990   tau( 19) = (  0.25409  0.07624  0.23742  )
+       20   O         15.9990   tau( 20) = (  0.12051  0.37146  0.74835  )
+       21   Na        22.9900   tau( 21) = ( -0.14410  0.43418  0.48981  )
+       22   Na        22.9900   tau( 22) = (  0.51871  0.01352  0.49597  )
+
+     List of 10 atoms which will be perturbed (one at a time):
+
+        1   Mn        54.9380   tau( 1) = ( -0.01327 -0.04278  0.21562  )
+        3   Mn        54.9380   tau( 3) = (  0.20448  0.31433  0.07455  )
+        5   Mn        54.9380   tau( 5) = ( -0.03109 -0.11704  0.63260  )
+        7   O         15.9990   tau( 7) = (  0.36620  0.79943  0.17077  )
+        9   O         15.9990   tau( 9) = ( -0.05387  0.18310  0.03730  )
+       11   O         15.9990   tau(11) = ( -0.10469  0.08228  0.44963  )
+       13   O         15.9990   tau(13) = (  0.46931  0.42958  0.10416  )
+       15   O         15.9990   tau(15) = ( -0.32416  0.71054  0.31468  )
+       17   O         15.9990   tau(17) = (  0.15065  0.46317  0.30305  )
+       19   O         15.9990   tau(19) = (  0.25409  0.07624  0.23742  )
+
+     Determination of the indices of inter-site couples ...
+
+ 
+     HP           :      1.51s CPU      4.56s WALL
+
+ 
+   This run was terminated on:  17:45:15   4Dec2024            
+
+=------------------------------------------------------------------------------=
+   JOB DONE.
+=------------------------------------------------------------------------------=
